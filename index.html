@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Happy Birthday Ruth 🎂</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -11,15 +12,12 @@
       --gold: #c9a96e;
       --gold-light: #e8d5b0;
       --dark: #1a1a2e;
-      --dark2: #16213e;
       --white: #ffffff;
-      --gray: #888;
     }
 
     html { scroll-behavior: smooth; }
-
     body {
-      font-family: 'Georgia', 'Times New Roman', serif;
+      font-family: 'Georgia', serif;
       background: var(--dark);
       color: var(--white);
       overflow-x: hidden;
@@ -30,47 +28,36 @@
       position: fixed;
       top: 0; left: 0; right: 0;
       z-index: 1000;
-      padding: 16px 24px;
+      padding: 14px 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: rgba(26, 26, 46, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+      background: rgba(26,26,46,0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(201,169,110,0.2);
     }
-
     .logo {
-      font-size: 1.4rem;
+      font-size: 1.35rem;
       font-weight: 700;
       letter-spacing: 0.12em;
       color: var(--gold);
       text-transform: uppercase;
     }
-
-    nav {
-      display: flex;
-      gap: 6px;
-    }
-
+    nav { display: flex; gap: 6px; }
     .tab-btn {
-      padding: 8px 20px;
-      border: 1.5px solid rgba(201, 169, 110, 0.4);
+      padding: 7px 20px;
+      border: 1.5px solid rgba(201,169,110,0.4);
       border-radius: 30px;
       background: transparent;
       color: var(--gold-light);
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       letter-spacing: 0.06em;
-      transition: all 0.3s ease;
+      transition: all 0.3s;
       font-family: inherit;
     }
-
-    .tab-btn:hover {
-      border-color: var(--gold);
-      background: rgba(201, 169, 110, 0.1);
-    }
-
+    .tab-btn:hover { border-color: var(--gold); background: rgba(201,169,110,0.1); }
     .tab-btn.active {
       background: var(--gold);
       border-color: var(--gold);
@@ -78,262 +65,300 @@
       font-weight: 700;
     }
 
-    /* ─── YEAR VIEWS ─── */
-    .year-view {
-      display: none;
-      min-height: 100vh;
-    }
+    /* ─── VIEWS ─── */
+    .year-view { display: none; }
     .year-view.active { display: block; }
 
-    /* ─── 2026: FULLSCREEN SCROLL SECTIONS ─── */
-    #view-2026 {
-      padding-top: 0;
+    /* ══════════════════════════════════
+       2026 — FIXED BACKGROUND SLIDESHOW
+       ══════════════════════════════════ */
+    #view-2026 { position: relative; }
+
+    /* Fixed stage — always fills the screen */
+    .slide-stage {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
     }
 
-    .photo-section {
-      position: relative;
-      width: 100%;
-      height: 100svh;
-      min-height: 500px;
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .photo-bg {
+    /* Each slide sits on top of each other, fades in/out */
+    .slide {
       position: absolute;
       inset: 0;
-      background-size: cover;
-      background-position: center;
-      transform: scale(1.08);
-      transition: transform 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  opacity 0.8s ease;
       opacity: 0;
+      transition: opacity 1.1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide.active { opacity: 1; }
+
+    .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
     }
 
-    .photo-section.visible .photo-bg {
-      transform: scale(1);
-      opacity: 1;
-    }
+    /* Per-photo focus point — keeps faces in frame on any screen */
+    .slide:nth-child(1) img { object-position: center 30%; }
+    .slide:nth-child(2) img { object-position: center 25%; }
+    .slide:nth-child(3) img { object-position: center 10%; } /* Ruth head was cut */
+    .slide:nth-child(4) img { object-position: center 15%; }
+    .slide:nth-child(5) img { object-position: center 20%; }
 
-    .photo-overlay {
+    .slide-overlay {
       position: absolute;
       inset: 0;
       background: linear-gradient(
         to bottom,
-        rgba(0,0,0,0.15) 0%,
-        rgba(0,0,0,0.05) 30%,
-        rgba(0,0,0,0.45) 70%,
-        rgba(0,0,0,0.72) 100%
+        rgba(0,0,0,0.1) 0%,
+        rgba(0,0,0,0.02) 35%,
+        rgba(0,0,0,0.4) 65%,
+        rgba(0,0,0,0.75) 100%
       );
     }
 
-    .photo-text {
+    /* Scrollable trigger strips — each 100vh, invisible */
+    .scroll-strips {
       position: relative;
       z-index: 2;
+      pointer-events: none;
+    }
+    .strip {
+      height: 100svh;
+      min-height: 500px;
+    }
+
+    /* Text overlay — fixed, changes with active slide */
+    .slide-caption {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 3;
+      padding: 48px 32px 52px;
       text-align: center;
-      padding: 24px 32px;
-      max-width: 640px;
-      transform: translateY(30px);
+      pointer-events: none;
       opacity: 0;
-      transition: transform 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s,
-                  opacity 0.9s ease 0.3s;
+      transform: translateY(18px);
+      transition: opacity 0.85s ease, transform 0.85s ease;
     }
-
-    .photo-section.visible .photo-text {
-      transform: translateY(0);
+    .slide-caption.active {
       opacity: 1;
+      transform: translateY(0);
     }
-
-    .photo-number {
-      font-size: 0.75rem;
-      letter-spacing: 0.25em;
+    .cap-num {
+      font-size: 0.72rem;
+      letter-spacing: 0.26em;
       color: var(--gold-light);
       text-transform: uppercase;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       opacity: 0.7;
     }
-
-    .photo-quote {
-      font-size: clamp(1.4rem, 4vw, 2.4rem);
-      line-height: 1.4;
+    .cap-quote {
+      font-size: clamp(1.3rem, 3.8vw, 2.2rem);
+      line-height: 1.45;
       font-style: italic;
       color: var(--white);
-      text-shadow: 0 2px 20px rgba(0,0,0,0.6);
-      margin-bottom: 16px;
+      text-shadow: 0 2px 18px rgba(0,0,0,0.55);
+      margin-bottom: 12px;
+      max-width: 620px;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    .photo-sub {
-      font-size: clamp(0.85rem, 2.2vw, 1.05rem);
+    .cap-sub {
+      font-size: clamp(0.82rem, 2vw, 1rem);
       color: var(--gold-light);
       letter-spacing: 0.04em;
       opacity: 0.85;
     }
-
-    /* last section special styling */
-    .photo-section:last-child .photo-quote {
-      font-size: clamp(1.8rem, 5.5vw, 3.2rem);
+    /* Last slide bigger title */
+    .slide-caption:last-child .cap-quote {
       font-style: normal;
       font-weight: 700;
+      font-size: clamp(1.7rem, 5vw, 3rem);
     }
 
-    /* scroll indicator */
+    /* Scroll hint on first strip */
     .scroll-hint {
-      position: absolute;
+      position: fixed;
       bottom: 28px;
       left: 50%;
       transform: translateX(-50%);
-      z-index: 3;
+      z-index: 4;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 8px;
-      opacity: 0.6;
-      animation: bounce 2s infinite;
+      gap: 6px;
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
     }
-
+    .scroll-hint.visible { opacity: 0.55; }
+    .scroll-hint.hidden { opacity: 0; }
     .scroll-hint span {
-      font-size: 0.7rem;
-      letter-spacing: 0.18em;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
       color: var(--white);
       text-transform: uppercase;
     }
-
     .scroll-hint svg {
-      width: 22px;
-      height: 22px;
-      fill: none;
-      stroke: var(--white);
-      stroke-width: 2;
+      width: 20px; height: 20px;
+      fill: none; stroke: var(--white); stroke-width: 2;
+      animation: bounce 2s infinite;
     }
-
     @keyframes bounce {
-      0%, 100% { transform: translateX(-50%) translateY(0); }
-      50% { transform: translateX(-50%) translateY(7px); }
+      0%,100% { transform: translateY(0); }
+      50% { transform: translateY(6px); }
     }
 
-    /* section progress dots */
+    /* Progress dots */
     .progress-dots {
       position: fixed;
-      right: 20px;
+      right: 18px;
       top: 50%;
       transform: translateY(-50%);
-      z-index: 999;
+      z-index: 5;
       display: flex;
       flex-direction: column;
       gap: 10px;
     }
-
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px; height: 7px;
       border-radius: 50%;
-      background: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.28);
       cursor: pointer;
+      pointer-events: all;
       transition: all 0.3s;
-      border: 1.5px solid rgba(255,255,255,0.4);
+      border: 1.5px solid rgba(255,255,255,0.38);
     }
-
     .dot.active {
       background: var(--gold);
       border-color: var(--gold);
-      transform: scale(1.4);
+      transform: scale(1.45);
     }
 
-    #view-2026:not(.active) ~ .progress-dots,
-    .progress-dots.hidden { display: none; }
-
-    /* ─── 2025: OLD GREETING ─── */
+    /* ══════════════════════════
+       2025 — ORIGINAL LETTER
+       ══════════════════════════ */
     #view-2025 {
-      padding-top: 80px;
+      padding-top: 68px;
       min-height: 100vh;
+      background: linear-gradient(135deg, #8B4513, #A0522D, #CD853F);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-bottom: 40px;
     }
 
-    .greeting-2025 {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 48px 24px 80px;
+    .letter-wrap {
+      padding: 40px 20px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
     }
 
-    .greeting-2025 .year-badge {
-      display: inline-block;
-      border: 1.5px solid var(--gold);
-      color: var(--gold);
-      font-size: 0.75rem;
-      letter-spacing: 0.22em;
-      padding: 5px 16px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      margin-bottom: 32px;
+    .letter-container {
+      background:
+        radial-gradient(circle at 20% 80%, rgba(120,81,45,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(139,69,19,0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(160,82,45,0.05) 0%, transparent 50%),
+        linear-gradient(145deg, #DEB887, #F5DEB3, #D2B48C, #E6D3A3);
+      width: 600px;
+      max-width: 100%;
+      padding: 60px;
+      border-radius: 8px;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.2),
+        0 1px 2px rgba(0,0,0,0.1);
+      position: relative;
+      transform: rotate(-0.5deg);
+      border: 2px solid rgba(139,69,19,0.1);
+      font-family: 'Kalam', cursive;
     }
 
-    .greeting-2025 h1 {
-      font-size: clamp(2rem, 6vw, 3.8rem);
+    .letter-container::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(139,69,19,0.03) 2px, rgba(139,69,19,0.03) 4px),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(139,69,19,0.02) 2px, rgba(139,69,19,0.02) 4px);
+      border-radius: 8px;
+      pointer-events: none;
+    }
+    .letter-container::after {
+      content: '';
+      position: absolute;
+      top: 10px; left: 10px; right: 10px; bottom: 10px;
+      border: 1px solid rgba(139,69,19,0.1);
+      border-radius: 6px;
+      pointer-events: none;
+    }
+
+    .letter-content { position: relative; z-index: 1; }
+
+    .greeting {
+      font-family: 'Dancing Script', cursive;
+      font-size: 32px;
       font-weight: 700;
-      color: var(--gold);
-      margin-bottom: 12px;
-      line-height: 1.15;
+      color: #654321;
+      margin-bottom: 30px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
     }
-
-    .greeting-2025 .subtitle {
-      font-size: 1.1rem;
-      color: var(--gold-light);
-      letter-spacing: 0.06em;
-      margin-bottom: 48px;
-      opacity: 0.8;
+    .letter-text {
+      font-size: 18px;
+      line-height: 1.8;
+      color: #5D4037;
+      margin-bottom: 25px;
+      text-align: justify;
+      font-weight: 400;
     }
-
-    .greeting-2025 .divider {
-      width: 60px;
-      height: 2px;
-      background: linear-gradient(90deg, var(--gold), transparent);
-      margin-bottom: 40px;
+    .paragraph { margin-bottom: 20px; text-indent: 20px; }
+    .signature {
+      margin-top: 40px;
+      text-align: right;
+      font-family: 'Dancing Script', cursive;
+      font-size: 24px;
+      font-weight: 600;
+      color: #654321;
     }
-
-    .greeting-2025 p {
-      font-size: clamp(1rem, 2.5vw, 1.18rem);
-      line-height: 1.85;
-      color: rgba(255,255,255,0.88);
-      margin-bottom: 24px;
+    .signature-line { margin-top: 10px; font-size: 20px; }
+    .emoji { font-size: 20px; margin: 0 2px; }
+    .highlight {
+      background: linear-gradient(120deg, rgba(255,215,0,0.2) 0%, rgba(255,215,0,0.1) 100%);
+      padding: 2px 4px;
+      border-radius: 3px;
     }
-
-    .greeting-2025 .poem-block {
-      border-left: 3px solid var(--gold);
-      padding: 20px 28px;
-      margin: 36px 0;
-      background: rgba(201, 169, 110, 0.06);
-      border-radius: 0 8px 8px 0;
-      font-style: italic;
-      color: var(--gold-light);
-      line-height: 2;
-      font-size: clamp(0.95rem, 2.2vw, 1.1rem);
+    .decorative-border {
+      position: absolute;
+      top: 30px; left: 30px; right: 30px; bottom: 30px;
+      border: 2px solid rgba(139,69,19,0.15);
+      border-radius: 4px;
+      pointer-events: none;
     }
-
-    .greeting-2025 .sign {
-      margin-top: 48px;
-      font-size: 1rem;
-      color: var(--gold);
-      letter-spacing: 0.08em;
+    .corner-flourish {
+      position: absolute;
+      width: 40px; height: 40px;
+      background: radial-gradient(circle, rgba(139,69,19,0.1) 0%, transparent 70%);
+      border-radius: 50%;
     }
-
-    /* ─── FOOTER ─── */
-    footer {
-      text-align: center;
-      padding: 32px 24px;
-      font-size: 0.78rem;
-      color: rgba(255,255,255,0.2);
-      letter-spacing: 0.1em;
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
+    .corner-flourish.top-left    { top: 20px; left: 20px; }
+    .corner-flourish.top-right   { top: 20px; right: 20px; }
+    .corner-flourish.bottom-left { bottom: 20px; left: 20px; }
+    .corner-flourish.bottom-right{ bottom: 20px; right: 20px; }
+    .ink-spot { position: absolute; background: rgba(139,69,19,0.2); border-radius: 50%; }
+    .ink-spot.spot1 { top: 120px; left: 80px; width: 3px; height: 3px; }
+    .ink-spot.spot2 { top: 300px; right: 90px; width: 2px; height: 2px; }
+    .ink-spot.spot3 { bottom: 150px; left: 70px; width: 5px; height: 5px; opacity: 0.3; }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 600px) {
       .logo { font-size: 1.1rem; }
-      .tab-btn { padding: 7px 14px; font-size: 0.82rem; }
-      .photo-text { padding: 20px 20px; }
-      .progress-dots { right: 10px; }
-      .greeting-2025 { padding: 32px 18px 60px; }
+      .tab-btn { padding: 6px 13px; font-size: 0.82rem; }
+      .slide-caption { padding: 32px 20px 44px; }
+      .progress-dots { right: 9px; }
+      .letter-container { padding: 36px 24px; transform: none; }
+      .greeting { font-size: 26px; }
+      .letter-text { font-size: 16px; }
     }
   </style>
 </head>
@@ -347,115 +372,130 @@
     </nav>
   </header>
 
-  <!-- ──── 2026 VIEW ──── -->
+  <!-- ══════════════ 2026 ══════════════ -->
   <div id="view-2026" class="year-view active">
 
-    <!-- Section 1 -->
-    <section class="photo-section" id="sec-1" data-index="0">
-      <div class="photo-bg" style="background-image: url('photos/photo1.jpg')"></div>
-      <div class="photo-overlay"></div>
-      <div class="photo-text">
-        <p class="photo-number">01 / 05</p>
-        <h2 class="photo-quote">«Du hesch mi empfange wie e Mitglied vo de Familie.»</h2>
-        <p class="photo-sub">Vo de erschte Sekunde a hei mir zäme glacht, gredt und gläbt.</p>
+    <!-- Fixed photo stage -->
+    <div class="slide-stage" id="stage">
+      <div class="slide active" id="slide-0">
+        <img src="photos/photo1.jpg" alt="">
+        <div class="slide-overlay"></div>
       </div>
-      <div class="scroll-hint">
-        <span>Scroll</span>
-        <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="slide" id="slide-1">
+        <img src="photos/photo2.jpg" alt="">
+        <div class="slide-overlay"></div>
       </div>
-    </section>
+      <div class="slide" id="slide-2">
+        <img src="photos/photo3.jpg" alt="">
+        <div class="slide-overlay"></div>
+      </div>
+      <div class="slide" id="slide-3">
+        <img src="photos/photo4.jpg" alt="">
+        <div class="slide-overlay"></div>
+      </div>
+      <div class="slide" id="slide-4">
+        <img src="photos/photo5.jpg" alt="">
+        <div class="slide-overlay"></div>
+      </div>
+    </div>
 
-    <!-- Section 2 -->
-    <section class="photo-section" id="sec-2" data-index="1">
-      <div class="photo-bg" style="background-image: url('photos/photo2.jpg')"></div>
-      <div class="photo-overlay"></div>
-      <div class="photo-text">
-        <p class="photo-number">02 / 05</p>
-        <h2 class="photo-quote">«Die schönschte Momänt entstönd bi eme Kafi.»</h2>
-        <p class="photo-sub">Warmi Tasse, warmi Gsichte — das isch Zuhause.</p>
-      </div>
-    </section>
+    <!-- Captions (fixed, switch with JS) -->
+    <div class="slide-caption active" id="cap-0">
+      <p class="cap-num">01 / 05</p>
+      <h2 class="cap-quote">«Du hesch mi empfange wie e Mitglied vo de Familie.»</h2>
+      <p class="cap-sub">Vo de erschte Sekunde a hei mir zäme glacht, gredt und gläbt.</p>
+    </div>
+    <div class="slide-caption" id="cap-1">
+      <p class="cap-num">02 / 05</p>
+      <h2 class="cap-quote">«Die schönschte Momänt entstönd bi eme Kafi.»</h2>
+      <p class="cap-sub">Warmi Tasse, warmi Gsichte — das isch Zuhause.</p>
+    </div>
+    <div class="slide-caption" id="cap-2">
+      <p class="cap-num">03 / 05</p>
+      <h2 class="cap-quote">«Dis Lache isch es ächts Gschenk für alli wo di kennid.»</h2>
+      <p class="cap-sub">Wenn du strahlesch, strahlt d'ganze Wält.</p>
+    </div>
+    <div class="slide-caption" id="cap-3">
+      <p class="cap-num">04 / 05</p>
+      <h2 class="cap-quote">«Du bringsch Wärmi und Fröid in jeden Moment.»</h2>
+      <p class="cap-sub">Das isch kei Zuefälligkeit — das bisch eifach du.</p>
+    </div>
+    <div class="slide-caption" id="cap-4">
+      <p class="cap-num">05 / 05</p>
+      <h2 class="cap-quote">Herzlichä Glückwunsch zum Geburtstag, Ruth!</h2>
+      <p class="cap-sub">Mir wünschet dir es Jahr voller Liebi, Gsundheit und schöni Erinnige. ✦</p>
+    </div>
 
-    <!-- Section 3 -->
-    <section class="photo-section" id="sec-3" data-index="2">
-      <div class="photo-bg" style="background-image: url('photos/photo3.jpg')"></div>
-      <div class="photo-overlay"></div>
-      <div class="photo-text">
-        <p class="photo-number">03 / 05</p>
-        <h2 class="photo-quote">«Dis Lache — es isch ächs Gschenk für alli wo di kennid.»</h2>
-        <p class="photo-sub">Wenn du strahlesch, strahlt d'ganze Wält.</p>
-      </div>
-    </section>
+    <!-- Scroll hint -->
+    <div class="scroll-hint visible" id="scroll-hint">
+      <span>Scroll</span>
+      <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
 
-    <!-- Section 4 -->
-    <section class="photo-section" id="sec-4" data-index="3">
-      <div class="photo-bg" style="background-image: url('photos/photo4.jpg')"></div>
-      <div class="photo-overlay"></div>
-      <div class="photo-text">
-        <p class="photo-number">04 / 05</p>
-        <h2 class="photo-quote">«Du bringsch Wärmi und Fröid in jeden Moment.»</h2>
-        <p class="photo-sub">Das isch kei Zuefälligkeit — das bisch du.</p>
-      </div>
-    </section>
+    <!-- Progress dots -->
+    <div class="progress-dots" id="progress-dots">
+      <div class="dot active" onclick="goToSlide(0)"></div>
+      <div class="dot" onclick="goToSlide(1)"></div>
+      <div class="dot" onclick="goToSlide(2)"></div>
+      <div class="dot" onclick="goToSlide(3)"></div>
+      <div class="dot" onclick="goToSlide(4)"></div>
+    </div>
 
-    <!-- Section 5 — Birthday -->
-    <section class="photo-section" id="sec-5" data-index="4">
-      <div class="photo-bg" style="background-image: url('photos/photo5.jpg')"></div>
-      <div class="photo-overlay"></div>
-      <div class="photo-text">
-        <p class="photo-number">05 / 05</p>
-        <h2 class="photo-quote">Herzlichä Glückwunsch zum Geburtstag, Ruth!</h2>
-        <p class="photo-sub">Mir wünschet dir es Jahr voller Liebi, Gsundheit und schöni Erinnige. ✦</p>
-      </div>
-    </section>
+    <!-- Invisible scroll strips — one per slide -->
+    <div class="scroll-strips" id="strips">
+      <div class="strip" data-slide="0"></div>
+      <div class="strip" data-slide="1"></div>
+      <div class="strip" data-slide="2"></div>
+      <div class="strip" data-slide="3"></div>
+      <div class="strip" data-slide="4"></div>
+    </div>
 
   </div><!-- /view-2026 -->
 
-  <!-- Progress dots (only for 2026) -->
-  <div class="progress-dots" id="progress-dots">
-    <div class="dot active" onclick="scrollToSection(0)"></div>
-    <div class="dot" onclick="scrollToSection(1)"></div>
-    <div class="dot" onclick="scrollToSection(2)"></div>
-    <div class="dot" onclick="scrollToSection(3)"></div>
-    <div class="dot" onclick="scrollToSection(4)"></div>
-  </div>
-
-  <!-- ──── 2025 VIEW ──── -->
+  <!-- ══════════════ 2025 ══════════════ -->
   <div id="view-2025" class="year-view">
-    <div class="greeting-2025">
-      <span class="year-badge">Geburtstag 2025</span>
-      <h1>Alles Guete, liebe Ruth!</h1>
-      <p class="subtitle">Eine kleine Überraschung mit viel Herzblut</p>
-      <div class="divider"></div>
+    <div class="letter-wrap">
+      <div class="letter-container">
+        <div class="decorative-border"></div>
+        <div class="corner-flourish top-left"></div>
+        <div class="corner-flourish top-right"></div>
+        <div class="corner-flourish bottom-left"></div>
+        <div class="corner-flourish bottom-right"></div>
+        <div class="ink-spot spot1"></div>
+        <div class="ink-spot spot2"></div>
+        <div class="ink-spot spot3"></div>
 
-      <p>
-        Liebi Ruth, hüt isch din besonderer Tag — und wir wönd dir säge, wie froh mir sind, dass es dich git. Du bisch nöd nur d'Mueter vo Kristina, du bisch es Vorbild, e warmi Seele und es Licht im Läbe vo allne, wo dich kennid.
-      </p>
+        <div class="letter-content">
+          <div class="greeting">Liebe Ruth,</div>
 
-      <div class="poem-block">
-        <p>Jedes Johr bringsch du meh Liab,<br>
-        meh Fröid, meh Wärmi i üsi Wält.<br>
-        Dini Güete isch es Gschenk,<br>
-        das nüt uf d'r Wält ersetze chönnti.</p>
+          <div class="letter-text">
+            <div class="paragraph">
+              von ganzem Herzen gratuliere ich Ihnen zum Geburtstag! Obwohl uns heute Tausende von Kilometern trennen, denke ich oft an die wundervollen Momente zurück, die wir mit Ihrer Familie in der Schweiz verbracht haben.
+            </div>
+            <div class="paragraph">
+              Ich werde niemals Ihr <span class="highlight">duftiges, frischgebackenes Samstagsb­rot</span> und den unglaublich zarten und köstlichen <span class="highlight">Lachs</span> vergessen — diese Geschmäcker sind für immer in meiner Erinnerung geblieben. Und unsere <span class="highlight">Skip-Bo-Spiele</span>! Es war so besonders, wie wir uns auch ohne viele Worte so gut verstanden haben <span class="emoji">😊</span>. Manchmal sagt ein Lächeln mehr als tausend Worte.
+            </div>
+            <div class="paragraph">
+              Sie haben mich mit familiärer Wärme aufgenommen, und dafür bin ich Ihnen unendlich dankbar. Ihre Herzlichkeit und Güte haben meinen Aufenthalt unvergesslich gemacht.
+            </div>
+            <div class="paragraph">
+              Ich wünsche Ihnen Gesundheit, Glück und viele schöne Momente mit Ihrer Familie. Möge dieses neue Lebensjahr Ihnen nur Freude bringen!
+            </div>
+          </div>
+
+          <div class="signature">
+            <div>Mit herzlichen Grüßen an alle</div>
+            <div class="signature-line">(Peter, Christine, Mathias)</div>
+            <div class="signature-line">aus Tadschikistan,</div>
+            <div class="signature-line" style="margin-top:20px;font-size:28px;">Temur</div>
+          </div>
+        </div>
       </div>
-
-      <p>
-        Du hesch es Herz us Gold — du kümmered dich um alli, tuesch meh als nötig und verlangsch nüt im Gegezug. Das isch sälte und wunderschön. Mir hoffid, dass du hüt auch mal verwöhnt wirsch — so wie du alli andere verwöhnsch.
-      </p>
-
-      <p>
-        Mir wünschet dir Gsundheit, Fröid und vieli schöni Momänt — mit dine Liebe, in de Natur, bi eme Kafi und bi allem, was dir Fröid macht. Du verdiensch's.
-      </p>
-
-      <p class="sign">
-        In Liebi, Temur &amp; Kristina ✦
-      </p>
     </div>
-    <footer>Ruth ✦ Geburtstag 2025</footer>
   </div>
 
   <script>
-    // ─── TAB SWITCHING ───
+    // ─── TAB SWITCH ───
     function switchTab(year) {
       document.querySelectorAll('.year-view').forEach(v => v.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -464,30 +504,49 @@
         if (b.textContent.trim() === year) b.classList.add('active');
       });
       const dots = document.getElementById('progress-dots');
-      dots.style.display = year === '2026' ? 'flex' : 'none';
-      if (year === '2026') window.scrollTo(0, 0);
+      if (year === '2026') {
+        dots.style.display = 'flex';
+        window.scrollTo(0, 0);
+        setSlide(0);
+      } else {
+        dots.style.display = 'none';
+        window.scrollTo(0, 0);
+      }
     }
 
-    // ─── INTERSECTION OBSERVER ───
-    const sections = document.querySelectorAll('.photo-section');
-    const dots = document.querySelectorAll('.dot');
+    // ─── SLIDE LOGIC ───
+    let currentSlide = 0;
+    const TOTAL = 5;
 
+    function setSlide(idx) {
+      if (idx === currentSlide && idx !== 0) return;
+      // slides
+      document.querySelectorAll('.slide').forEach((s, i) => s.classList.toggle('active', i === idx));
+      // captions
+      document.querySelectorAll('.slide-caption').forEach((c, i) => c.classList.toggle('active', i === idx));
+      // dots
+      document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      // scroll hint
+      document.getElementById('scroll-hint').classList.toggle('visible', idx === 0);
+      currentSlide = idx;
+    }
+
+    function goToSlide(idx) {
+      const strips = document.querySelectorAll('.strip');
+      strips[idx].scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── INTERSECTION OBSERVER on strips ───
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          const idx = parseInt(entry.target.dataset.index);
-          dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+          const idx = parseInt(entry.target.dataset.slide);
+          setSlide(idx);
         }
       });
-    }, { threshold: 0.45 });
+    }, { threshold: 0.5 });
 
-    sections.forEach(s => observer.observe(s));
-
-    // ─── SCROLL TO SECTION ───
-    function scrollToSection(idx) {
-      sections[idx].scrollIntoView({ behavior: 'smooth' });
-    }
+    document.querySelectorAll('.strip').forEach(s => observer.observe(s));
   </script>
 
 </body>
