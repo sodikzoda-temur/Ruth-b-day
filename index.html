@@ -257,11 +257,12 @@
       padding-top: 68px;
       min-height: 100vh;
       background: linear-gradient(135deg, #8B4513, #A0522D, #CD853F);
-      display: flex;
       justify-content: center;
       align-items: flex-start;
       padding-bottom: 40px;
     }
+    /* id-specificity display rules so the active tab wins reliably */
+    #view-2025.active { display: flex; }
     .letter-wrap {
       padding: 40px 20px;
       width: 100%;
